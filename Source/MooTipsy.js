@@ -394,21 +394,21 @@ MooTipsy.implement({
     this.positionAtElement(target);
     this.isVisible() ? this.show() : this.reveal();
     if(fn) { 
-      fn();
+      fn(this, target);
     }
   },
 
   onBoundEventLeave : function(target,fn) {
     this.onBlur();
-    this.pollHide(fn);
+    this.pollHide(fn, target);
   },
 
-  pollHide : function(fn) {
+  pollHide : function(fn, target) {
     clearTimeout(this.hideTimer);
     this.hidetimer = (function() {
       clearTimeout(this.hideTimer);
       if(fn) {
-        fn();
+        fn(this, target);
       }
       if(!this.hasFocus()) {
         this.dissolve();
