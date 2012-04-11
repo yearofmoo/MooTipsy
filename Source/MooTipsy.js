@@ -69,6 +69,7 @@ MooTipsy.extend({
   },
 
   onBeforeShow : function(instance) {
+    clearTimeout(this.hideTimer);
     if(instance.hasOption('onlyShowThis')) {
       this.hideAll();
     }
@@ -361,29 +362,54 @@ MooTipsy.implement({
     return !! this.focus;
   },
 
+  bindContainerEvents : function(container,selector,events) {
+    container = document.id(container);
+    events = events || {};
+    var callbacks = {};
+    var relay = 'relay('+selector+')';
+    callbacks['mouseenter:'+relay] = function(event,target) {
+      this.onBoundEventEnter(target,events.onShow);
+    }.bind(this);
+    callbacks['mouseleave:'+relay] = function(event,target) {
+      this.onBoundEventLeave(target,events.onHide);
+    }.bind(this);
+    container.addEvents(callbacks);
+  },
+
   bindElementEvents : function(selector,events) {
     events = events || {};
     var that = this;
     $$(selector).addEvents({
-
       'mouseenter':function() {
-        that.onFocus();
-        that.positionAtElement(this);
-        that.isVisible() ? that.show() : that.reveal();
+        that.onBoundEventEnter(this,events.onShow);
       },
-
       'mouseleave':function() {
-        that.onBlur();
-        that.pollHide();
+        that.onBoundEventLeave(this,events.onHide);
       }
-
     });
   },
 
-  pollHide : function() {
+  onBoundEventEnter : function(target,fn) {
+    this.onFocus();
+    this.positionAtElement(target);
+    this.isVisible() ? this.show() : this.reveal();
+    if(fn) { 
+      fn();
+    }
+  },
+
+  onBoundEventLeave : function(target,fn) {
+    this.onBlur();
+    this.pollHide(fn);
+  },
+
+  pollHide : function(fn) {
     clearTimeout(this.hideTimer);
     this.hidetimer = (function() {
       clearTimeout(this.hideTimer);
+      if(fn) {
+        fn();
+      }
       if(!this.hasFocus()) {
         this.dissolve();
       }
