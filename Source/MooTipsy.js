@@ -90,7 +90,7 @@ MooTipsy.implement({
     className : 'mootipsy',
     zIndex : 1000,
     incrementZIndex : true,
-    loadOnShow : true,
+    loadOnShow : false,
     offset : {
       x : 0,
       y : 0
@@ -295,15 +295,17 @@ MooTipsy.implement({
 
   load : function(url,method,data,options) {
     var args = this.options.loadOptions;
-    args = [
-      url || args.url,
-      method || args.method,
-      data || args.data,
-      Object.append(args.options,options)
-    ];
-    this.cache.load = args;
-    var partial = this.getPartial();
-    partial.load.apply(partial,args);
+    if(url || args.url) {
+      args = [
+        url || args.url,
+        method || args.method,
+        data || args.data,
+        Object.append(args.options,options)
+      ];
+      this.cache.load = args;
+      var partial = this.getPartial();
+      partial.load.apply(partial,args);
+    }
   },
 
   reload : function() {
