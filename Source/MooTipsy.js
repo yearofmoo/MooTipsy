@@ -313,9 +313,9 @@ MooTipsy.implement({
   },
 
   setContent : function(content) {
-    var inner = this.getInner();
-    inner.empty();
-    typeOf(content) == 'string' ? inner.set('html',content) : inner.adopt(content);
+    var element = $(this.getPartial());
+    element.empty();
+    typeOf(content) == 'string' ? element.set('html',content) : element.adopt(content);
   },
 
   getContent : function() {
@@ -338,6 +338,7 @@ MooTipsy.implement({
   },
 
   onAfterShow : function() {
+    
     if(this.options.loadOnShow) {
       this.reload();
     }
