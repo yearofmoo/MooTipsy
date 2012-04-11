@@ -1,0 +1,3 @@
+[submodule "Source/XPartial.js"]
+	path = Source/XPartial
+	url = git://github.com/matsko/XPartial.js.git
