@@ -162,23 +162,18 @@ window.addEvent('domready',function() {
     offset : {
       x : -30,
       y : -20
-    }  
+    },
+    fxOptions : {
+      transition : 'bounce:out'
+    }
   });
   tip1.load('./tip1.html');
 
-  var position = function(event,target) {
-    tip1.positionAtElement(target);
-    if(!tip1.isVisible()) {
-      tip1.reveal();
-    }
-    else {
-      tip1.show();
-    }
-  };
-
   $('grid1').addEvents({
-    'mouseenter:relay(td)' : position,
-    'mouseenter:relay(td):pause(250)' : position
+  });
+
+  $('grid1').getElements('td').each(function(td,i) {
+    tip1.bindElementEvents(td);
   });
 
   $('grid2').getElements('td').each(function(td,i) {
@@ -198,17 +193,8 @@ window.addEvent('domready',function() {
       tip.load('./tip1.html');
     });
     td.store('tip',tip);
+    tip.bindElementEvents(td);
   });
-
-  $('grid2').getElements('td').addEvents({
-    'mouseenter' : function(event) {
-      this.retrieve('tip').reveal();
-    },
-    'mouseleave' : function(event) {
-      this.retrieve('tip').dissolve();
-    }
-  });
-
 
 });
 </script>

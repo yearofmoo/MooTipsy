@@ -80,7 +80,7 @@ MooTipsy.implement({
 
   Implements : [Options, Events],
 
-  Binds : ['onPartialReady','show','reveal','hide','dissolve'],
+  Binds : ['onPartialReady','onFocus','onBlur','show','reveal','hide','dissolve'],
 
   Accessors : [],
 
@@ -168,9 +168,15 @@ MooTipsy.implement({
       onReady : this.onPartialReady
     });
     this.getElement().addEvents({
-      'mouseover':function(event) {
+      'mouseenter':function(event) {
         event.stop();
-      }
+        this.onFocus();
+      }.bind(this),
+      'mouseleave':function(event) {
+        event.stop();
+        this.onBlur();
+        this.pollHide();
+      }.bind(this)
     });
   },
 
@@ -341,6 +347,47 @@ MooTipsy.implement({
 
   onAfterHide : function() {
     this.fireEvent('afterHide',[this]);
+  },
+
+  onFocus : function() {
+    this.focus = true;
+  },
+
+  onBlur : function() {
+    this.focus = false;
+  },
+
+  hasFocus : function() {
+    return !! this.focus;
+  },
+
+  bindElementEvents : function(selector,events) {
+    events = events || {};
+    var that = this;
+    $$(selector).addEvents({
+
+      'mouseenter':function() {
+        that.onFocus();
+        that.positionAtElement(this);
+        that.isVisible() ? that.show() : that.reveal();
+      },
+
+      'mouseleave':function() {
+        that.onBlur();
+        that.pollHide();
+      }
+
+    });
+  },
+
+  pollHide : function() {
+    clearTimeout(this.hideTimer);
+    this.hidetimer = (function() {
+      clearTimeout(this.hideTimer);
+      if(!this.hasFocus()) {
+        this.dissolve();
+      }
+    }).delay(200,this);
   },
 
   destroy : function() {
