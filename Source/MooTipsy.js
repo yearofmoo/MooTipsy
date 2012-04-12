@@ -111,6 +111,10 @@ MooTipsy.implement({
     fxOptions : {
       link : 'cancel',
       transition : 'quad:out'
+    },
+    fadeFxOptions : {
+      link : 'cancel',
+      transition : 'circ:out'
     }
   },
 
@@ -154,6 +158,13 @@ MooTipsy.implement({
       this.fx = new Fx.Morph(this.getElement(),this.options.fxOptions);
     }
     return this.fx;
+  },
+
+  getFadeFx : function() {
+    if(!this.fadeFx) {
+      this.fadeFx = new Fx.Morph(this.getElement(),this.options.fadeFxOptions);
+    }
+    return this.fadeFx;
   },
 
   cancelAnimation : function() {
@@ -256,16 +267,18 @@ MooTipsy.implement({
   },
 
   reveal : function() {
-    var element = this.getElement();
-    this.show();
-    element.setStyle('opacity',0);
-    this.getFx().start({
-      'opacity' : [0,1]
-    });
+    this.onBeforeShow();
+    this.getFadeFx().set({
+      'display':'block',
+      'opacity':0
+    }).start({
+      'opacity':1
+    }).chain(this.onAfterShow);
+    this.onShow();
   },
 
   dissolve : function() {
-    this.getFx().start({
+    this.getFadeFx().start({
       'opacity':0
     }).chain(this.hide);
   },
@@ -338,7 +351,6 @@ MooTipsy.implement({
   },
 
   onAfterShow : function() {
-    
     if(this.options.loadOnShow) {
       this.reload();
     }
@@ -351,6 +363,14 @@ MooTipsy.implement({
 
   onAfterHide : function() {
     this.fireEvent('afterHide',[this]);
+  },
+
+  onShow : function() {
+    this.fireEvent('show');
+  },
+
+  onHide : function() {
+    this.fireEvent('hide');
   },
 
   onFocus : function() {
