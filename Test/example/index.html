@@ -172,7 +172,7 @@ window.addEvent('domready',function() {
   $('grid1').addEvents({
   });
 
-  tip1.bindContainerEvents('grid1','td');
+  tip1.bindContainerEvents('grid1','td',{},1000);
 
   $('grid2').getElements('td').each(function(td,i) {
     var tip = new MooTipsy({
@@ -191,7 +191,7 @@ window.addEvent('domready',function() {
       tip.load('./tip1.html');
     });
     td.store('tip',tip);
-    tip.bindElementEvents(td);
+    tip.bindElementEvents(td,{},200);
   });
 
 });

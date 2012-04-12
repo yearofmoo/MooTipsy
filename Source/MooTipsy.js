@@ -385,13 +385,13 @@ MooTipsy.implement({
     return !! this.focus;
   },
 
-  bindContainerEvents : function(container,selector,events) {
+  bindContainerEvents : function(container,selector,events,delay) {
     container = document.id(container);
     events = events || {};
     var callbacks = {};
     var relay = 'relay('+selector+')';
     callbacks['mouseenter:'+relay] = function(event,target) {
-      this.onBoundEventEnter(target,events.onShow);
+      this.onBoundEventEnter(target,events.onShow,delay);
     }.bind(this);
     callbacks['mouseleave:'+relay] = function(event,target) {
       this.onBoundEventLeave(target,events.onHide);
@@ -399,12 +399,12 @@ MooTipsy.implement({
     container.addEvents(callbacks);
   },
 
-  bindElementEvents : function(selector,events) {
+  bindElementEvents : function(selector,events,delay) {
     events = events || {};
     var that = this;
     $$(selector).addEvents({
       'mouseenter':function() {
-        that.onBoundEventEnter(this,events.onShow);
+        that.onBoundEventEnter(this,events.onShow,delay);
       },
       'mouseleave':function() {
         that.onBoundEventLeave(this,events.onHide);
@@ -412,16 +412,23 @@ MooTipsy.implement({
     });
   },
 
-  onBoundEventEnter : function(target,fn) {
-    this.onFocus();
-    this.positionAtElement(target);
-    this.isVisible() ? this.show() : this.reveal();
-    if(fn) { 
-      fn(this, target);
+  onBoundEventEnter : function(target,fn,delay) {
+    clearTimeout(this.enterTimer);
+    if(this.isVisible()) {
+      delay = 1;
     }
+    this.enterTimer = (function() {
+      this.onFocus();
+      this.positionAtElement(target);
+      this.isVisible() ? this.show() : this.reveal();
+      if(fn) { 
+        fn(this, target);
+      }
+    }).delay(delay,this);
   },
 
   onBoundEventLeave : function(target,fn) {
+    clearTimeout(this.enterTimer);
     this.onBlur();
     this.pollHide(fn, target);
   },
