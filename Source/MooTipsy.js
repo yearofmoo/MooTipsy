@@ -239,6 +239,13 @@ MooTipsy.implement({
 
   move : function(x,y) {
     var coords = this.applyOffset(x,y);
+    if(this.isVisible()) {
+      this.getFadeFx().cancel();
+      this.show();
+    }
+    else {
+      this.reveal();
+    }
     this.getFx().start({
       'top':coords.y,
       'left':coords.x
@@ -269,8 +276,7 @@ MooTipsy.implement({
   reveal : function() {
     this.onBeforeShow();
     this.getFadeFx().set({
-      'display':'block',
-      'opacity':0
+      'display':'block'
     }).start({
       'opacity':1
     }).chain(this.onAfterShow);
