@@ -1,0 +1,2 @@
+- repo: git://github.com/matsko/XPartial.js.git
+  path: Source/include/XPartial.js
